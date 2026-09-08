@@ -1,0 +1,10 @@
+.git
+.github
+.idea
+target
+uploads
+*.iml
+.DS_Store
+README.md
+Dockerfile*
+docker-compose*.yml
