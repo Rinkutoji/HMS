@@ -1,9 +1,10 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 import { ChevronDown } from "lucide-react";
 
 export default function Sidebar({ title, items }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const location = useLocation();
 
   return (
     <>
@@ -20,8 +21,8 @@ export default function Sidebar({ title, items }) {
                 {title}
               </span>
               <span className="mt-0.5 block text-sm font-semibold text-slate-800">
-                {items.find((item) => window.location.pathname === item.to)
-                  ?.label || "Navigation"}
+                {items.find((item) => location.pathname === item.to)?.label ||
+                  "Navigation"}
               </span>
             </span>
             <ChevronDown
