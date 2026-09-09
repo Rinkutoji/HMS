@@ -24,6 +24,24 @@ Spring Boot 3 REST API for the Hotel Management System university project.
 4. API base URL: `http://localhost:8080`
 5. Swagger UI: `http://localhost:8080/swagger-ui.html`
 
+## Render + Aiven deployment
+
+If the backend runs on Render and MySQL is hosted by Aiven, configure these Render
+environment variables from the Aiven service details:
+
+```text
+SPRING_PROFILES_ACTIVE=prod
+DB_URL=jdbc:mysql://<aiven-host>:<aiven-port>/<database>?useSSL=true&sslMode=REQUIRED&allowPublicKeyRetrieval=true&serverTimezone=UTC
+DB_USERNAME=<aiven-username>
+DB_PASSWORD=<aiven-password>
+JWT_SECRET=<long-random-secret>
+```
+
+Use the Aiven host, port, database name, username, and password exactly as shown
+in Aiven. `DB_URL` must start with `jdbc:mysql://`; do not add a leading colon,
+surround the value with quotes, or paste Aiven's `mysql://` URI unchanged.
+Keep the credentials in Render environment variables or secrets, never in Git.
+
 ## Default seeded accounts
 
 | Role  | Email              | Password   |
