@@ -1,15 +1,15 @@
-import { useForm } from 'react-hook-form'
+import { useForm } from "react-hook-form";
 
 export default function ProfileForm({ defaultValues, onSubmit, loading }) {
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm({ defaultValues })
+  } = useForm({ defaultValues });
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="label" htmlFor="firstName">
             First name
@@ -17,9 +17,11 @@ export default function ProfileForm({ defaultValues, onSubmit, loading }) {
           <input
             id="firstName"
             className="input"
-            {...register('firstName', { required: 'Required' })}
+            {...register("firstName", { required: "Required" })}
           />
-          {errors.firstName && <p className="error-text">{errors.firstName.message}</p>}
+          {errors.firstName && (
+            <p className="error-text">{errors.firstName.message}</p>
+          )}
         </div>
         <div>
           <label className="label" htmlFor="lastName">
@@ -28,9 +30,11 @@ export default function ProfileForm({ defaultValues, onSubmit, loading }) {
           <input
             id="lastName"
             className="input"
-            {...register('lastName', { required: 'Required' })}
+            {...register("lastName", { required: "Required" })}
           />
-          {errors.lastName && <p className="error-text">{errors.lastName.message}</p>}
+          {errors.lastName && (
+            <p className="error-text">{errors.lastName.message}</p>
+          )}
         </div>
       </div>
 
@@ -38,12 +42,12 @@ export default function ProfileForm({ defaultValues, onSubmit, loading }) {
         <label className="label" htmlFor="phone">
           Phone
         </label>
-        <input id="phone" className="input" {...register('phone')} />
+        <input id="phone" className="input" {...register("phone")} />
       </div>
 
       <button type="submit" className="btn-primary" disabled={loading}>
-        {loading ? 'Saving...' : 'Save changes'}
+        {loading ? "Saving..." : "Save changes"}
       </button>
     </form>
-  )
+  );
 }
