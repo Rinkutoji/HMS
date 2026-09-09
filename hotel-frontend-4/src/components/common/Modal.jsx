@@ -1,7 +1,7 @@
-import { X } from 'lucide-react'
+import { X } from "lucide-react";
 
 export default function Modal({ open, onClose, title, children, footer }) {
-  if (!open) return null
+  if (!open) return null;
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
@@ -22,8 +22,12 @@ export default function Modal({ open, onClose, title, children, footer }) {
           </button>
         </div>
         <div className="px-5 py-4">{children}</div>
-        {footer && <div className="flex justify-end gap-2 border-t border-slate-200 px-5 py-4">{footer}</div>}
+        {footer && (
+          <div className="flex flex-col-reverse gap-2 border-t border-slate-200 px-5 py-4 sm:flex-row sm:justify-end">
+            {footer}
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
 }

@@ -1,27 +1,38 @@
-import { useEffect, useState } from 'react'
-import { Link } from 'react-router-dom'
-import { Plus, Pencil, Trash2, Images } from 'lucide-react'
-import { useForm } from 'react-hook-form'
-import { roomApi } from '../../api/roomApi'
-import { roomTypeApi } from '../../api/roomTypeApi'
-import Modal from '../../components/common/Modal'
-import ConfirmDialog from '../../components/common/ConfirmDialog'
-import Loader from '../../components/common/Loader'
-import EmptyState from '../../components/common/EmptyState'
-import Pagination from '../../components/common/Pagination'
-import { formatCurrency } from '../../utils/formatCurrency'
+import { useEffect, useState } from "react";
+import { Link } from "react-router-dom";
+import { Plus, Pencil, Trash2, Images } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { roomApi } from "../../api/roomApi";
+import { roomTypeApi } from "../../api/roomTypeApi";
+import Modal from "../../components/common/Modal";
+import ConfirmDialog from "../../components/common/ConfirmDialog";
+import Loader from "../../components/common/Loader";
+import EmptyState from "../../components/common/EmptyState";
+import Pagination from "../../components/common/Pagination";
+import { formatCurrency } from "../../utils/formatCurrency";
 
 function RoomFormFields({ register, errors, roomTypes }) {
   return (
     <div className="space-y-4">
       <div>
         <label className="label">Room number</label>
-        <input className="input" {...register('roomNumber', { required: 'Required' })} />
-        {errors.roomNumber && <p className="error-text">{errors.roomNumber.message}</p>}
+        <input
+          className="input"
+          {...register("roomNumber", { required: "Required" })}
+        />
+        {errors.roomNumber && (
+          <p className="error-text">{errors.roomNumber.message}</p>
+        )}
       </div>
       <div>
         <label className="label">Room type</label>
-        <select className="input" {...register('roomTypeId', { required: 'Required', valueAsNumber: true })}>
+        <select
+          className="input"
+          {...register("roomTypeId", {
+            required: "Required",
+            valueAsNumber: true,
+          })}
+        >
           <option value="">Select a room type</option>
           {roomTypes.map((rt) => (
             <option key={rt.id} value={rt.id}>
@@ -29,16 +40,22 @@ function RoomFormFields({ register, errors, roomTypes }) {
             </option>
           ))}
         </select>
-        {errors.roomTypeId && <p className="error-text">{errors.roomTypeId.message}</p>}
+        {errors.roomTypeId && (
+          <p className="error-text">{errors.roomTypeId.message}</p>
+        )}
       </div>
-      <div className="grid grid-cols-2 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <div>
           <label className="label">Floor</label>
-          <input type="number" className="input" {...register('floor', { valueAsNumber: true })} />
+          <input
+            type="number"
+            className="input"
+            {...register("floor", { valueAsNumber: true })}
+          />
         </div>
         <div>
           <label className="label">Status</label>
-          <select className="input" {...register('status')}>
+          <select className="input" {...register("status")}>
             <option value="AVAILABLE">Available</option>
             <option value="MAINTENANCE">Maintenance</option>
           </select>
@@ -46,90 +63,96 @@ function RoomFormFields({ register, errors, roomTypes }) {
       </div>
       <div>
         <label className="label">Description</label>
-        <textarea className="input" rows={3} {...register('description')} />
+        <textarea className="input" rows={3} {...register("description")} />
       </div>
     </div>
-  )
+  );
 }
 
 export default function RoomPage() {
-  const [rooms, setRooms] = useState(null)
-  const [roomTypes, setRoomTypes] = useState([])
-  const [page, setPage] = useState(0)
-  const [loading, setLoading] = useState(true)
-  const [modalOpen, setModalOpen] = useState(false)
-  const [editing, setEditing] = useState(null)
-  const [deleteTarget, setDeleteTarget] = useState(null)
-  const [saving, setSaving] = useState(false)
+  const [rooms, setRooms] = useState(null);
+  const [roomTypes, setRoomTypes] = useState([]);
+  const [page, setPage] = useState(0);
+  const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [deleteTarget, setDeleteTarget] = useState(null);
+  const [saving, setSaving] = useState(false);
 
   const {
     register,
     handleSubmit,
     reset,
     formState: { errors },
-  } = useForm()
+  } = useForm();
 
   const load = () => {
-    setLoading(true)
+    setLoading(true);
     roomApi
       .search({ page, size: 10 })
       .then((res) => setRooms(res.data))
-      .finally(() => setLoading(false))
-  }
+      .finally(() => setLoading(false));
+  };
 
   useEffect(() => {
-    roomTypeApi.listAdmin().then((res) => setRoomTypes(res.data))
-  }, [])
+    roomTypeApi.listAdmin().then((res) => setRoomTypes(res.data));
+  }, []);
 
-  useEffect(load, [page])
+  useEffect(load, [page]);
 
   const openCreate = () => {
-    setEditing(null)
-    reset({ roomNumber: '', roomTypeId: '', floor: '', status: 'AVAILABLE', description: '' })
-    setModalOpen(true)
-  }
+    setEditing(null);
+    reset({
+      roomNumber: "",
+      roomTypeId: "",
+      floor: "",
+      status: "AVAILABLE",
+      description: "",
+    });
+    setModalOpen(true);
+  };
 
   const openEdit = (room) => {
-    setEditing(room)
+    setEditing(room);
     reset({
       roomNumber: room.roomNumber,
       roomTypeId: room.roomTypeId,
       floor: room.floor,
       status: room.status,
       description: room.description,
-    })
-    setModalOpen(true)
-  }
+    });
+    setModalOpen(true);
+  };
 
   const onSubmit = async (values) => {
-    setSaving(true)
+    setSaving(true);
     try {
       if (editing) {
-        await roomApi.update(editing.id, values)
+        await roomApi.update(editing.id, values);
       } else {
-        await roomApi.create(values)
+        await roomApi.create(values);
       }
-      setModalOpen(false)
-      load()
+      setModalOpen(false);
+      load();
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   const handleDelete = async () => {
-    setSaving(true)
+    setSaving(true);
     try {
-      await roomApi.remove(deleteTarget.id)
-      setDeleteTarget(null)
-      load()
+      await roomApi.remove(deleteTarget.id);
+      setDeleteTarget(null);
+      load();
     } finally {
-      setSaving(false)
+      setSaving(false);
     }
-  }
+  };
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-semibold text-slate-800">Rooms</h1>
         <button className="btn-primary" onClick={openCreate}>
           <Plus className="h-4 w-4" />
@@ -157,17 +180,27 @@ export default function RoomPage() {
                 <tbody className="divide-y divide-slate-100">
                   {rooms.content.map((room) => (
                     <tr key={room.id}>
-                      <td className="px-4 py-3 font-medium text-slate-800">{room.roomNumber}</td>
+                      <td className="px-4 py-3 font-medium text-slate-800">
+                        {room.roomNumber}
+                      </td>
                       <td className="px-4 py-3">{room.roomTypeName}</td>
-                      <td className="px-4 py-3">{room.floor ?? '-'}</td>
-                      <td className="px-4 py-3">{formatCurrency(room.basePrice)}</td>
+                      <td className="px-4 py-3">{room.floor ?? "-"}</td>
+                      <td className="px-4 py-3">
+                        {formatCurrency(room.basePrice)}
+                      </td>
                       <td className="px-4 py-3">{room.status}</td>
                       <td className="px-4 py-3">
                         <div className="flex gap-1">
-                          <Link to={`/admin/rooms/${room.id}/images`} className="btn-ghost h-8 w-8 p-0">
+                          <Link
+                            to={`/admin/rooms/${room.id}/images`}
+                            className="btn-ghost h-8 w-8 p-0"
+                          >
                             <Images className="h-3.5 w-3.5" />
                           </Link>
-                          <button className="btn-ghost h-8 w-8 p-0" onClick={() => openEdit(room)}>
+                          <button
+                            className="btn-ghost h-8 w-8 p-0"
+                            onClick={() => openEdit(room)}
+                          >
                             <Pencil className="h-3.5 w-3.5" />
                           </button>
                           <button
@@ -183,29 +216,47 @@ export default function RoomPage() {
                 </tbody>
               </table>
             </div>
-            <Pagination pageNumber={rooms.pageNumber} totalPages={rooms.totalPages} onPageChange={setPage} />
+            <Pagination
+              pageNumber={rooms.pageNumber}
+              totalPages={rooms.totalPages}
+              onPageChange={setPage}
+            />
           </>
         ) : (
-          <EmptyState title="No rooms yet" description="Add rooms once you have room types set up." />
+          <EmptyState
+            title="No rooms yet"
+            description="Add rooms once you have room types set up."
+          />
         )}
       </div>
 
       <Modal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        title={editing ? 'Edit Room' : 'New Room'}
+        title={editing ? "Edit Room" : "New Room"}
         footer={
           <>
-            <button className="btn-secondary" onClick={() => setModalOpen(false)}>
+            <button
+              className="btn-secondary"
+              onClick={() => setModalOpen(false)}
+            >
               Cancel
             </button>
-            <button className="btn-primary" onClick={handleSubmit(onSubmit)} disabled={saving}>
-              {saving ? 'Saving...' : 'Save'}
+            <button
+              className="btn-primary"
+              onClick={handleSubmit(onSubmit)}
+              disabled={saving}
+            >
+              {saving ? "Saving..." : "Save"}
             </button>
           </>
         }
       >
-        <RoomFormFields register={register} errors={errors} roomTypes={roomTypes} />
+        <RoomFormFields
+          register={register}
+          errors={errors}
+          roomTypes={roomTypes}
+        />
       </Modal>
 
       <ConfirmDialog
@@ -219,5 +270,5 @@ export default function RoomPage() {
         loading={saving}
       />
     </div>
-  )
+  );
 }

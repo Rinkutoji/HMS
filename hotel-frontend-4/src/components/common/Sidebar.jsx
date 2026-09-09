@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { NavLink, useLocation } from "react-router-dom";
-import { ChevronDown } from "lucide-react";
+import { ChevronDown, ChevronLeft, ChevronRight } from "lucide-react";
 
 export default function Sidebar({ title, items }) {
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [collapsed, setCollapsed] = useState(false);
   const location = useLocation();
 
   return (
@@ -54,13 +55,36 @@ export default function Sidebar({ title, items }) {
           )}
         </div>
       </div>
-      <aside className="hidden w-48 shrink-0 border-r border-slate-200 bg-white md:block">
-        <div className="px-4 py-4">
-          <p className="text-xs font-semibold uppercase tracking-wide text-slate-400">
-            {title}
-          </p>
+      <aside
+        className={`hidden shrink-0 border-r border-slate-200 bg-white transition-[width] duration-200 md:block ${
+          collapsed ? "w-16" : "w-48"
+        }`}
+      >
+        <div
+          className={`flex items-center border-b border-slate-100 px-3 py-4 ${
+            collapsed ? "justify-center" : "justify-between"
+          }`}
+        >
+          {!collapsed && (
+            <p className="truncate text-xs font-semibold uppercase tracking-wide text-slate-400">
+              {title}
+            </p>
+          )}
+          <button
+            type="button"
+            onClick={() => setCollapsed((value) => !value)}
+            className="inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100 hover:text-slate-800"
+            aria-label={collapsed ? `Expand ${title}` : `Collapse ${title}`}
+            title={collapsed ? `Expand ${title}` : `Collapse ${title}`}
+          >
+            {collapsed ? (
+              <ChevronRight className="h-4 w-4" />
+            ) : (
+              <ChevronLeft className="h-4 w-4" />
+            )}
+          </button>
         </div>
-        <nav className="space-y-2 px-3">
+        <nav className="space-y-2 px-2 py-3">
           {items.map((item) => (
             <NavLink
               key={item.to}
@@ -71,11 +95,12 @@ export default function Sidebar({ title, items }) {
                   isActive
                     ? "bg-brand-50 text-brand-800"
                     : "text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                }`
+                } ${collapsed ? "justify-center px-0" : ""}`
               }
+              title={collapsed ? item.label : undefined}
             >
               <item.icon className="h-5 w-5 shrink-0" />
-              <span className="truncate">{item.label}</span>
+              {!collapsed && <span className="truncate">{item.label}</span>}
             </NavLink>
           ))}
         </nav>
