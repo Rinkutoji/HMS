@@ -1,31 +1,23 @@
-# syntax=docker/dockerfile:1
-
-FROM maven:3.9-eclipse-temurin-25 AS build
-
-WORKDIR /workspace
-
-COPY pom.xml .
-RUN mvn -B -DskipTests dependency:go-offline
-
-COPY src ./src
-RUN mvn -B -DskipTests package
-
-FROM eclipse-temurin:25-jre
-
+# syntax=docker/dockerfile:1.4
+FROM maven:3.9-eclipse-temurin-17 AS builder
 WORKDIR /app
 
-RUN mkdir -p /app/uploads \
-    && useradd --system --uid 10001 --create-home appuser \
-    && chown -R appuser:appuser /app
+# Step 1: Copy dependency definitions only
+COPY pom.xml .
 
-COPY --from=build --chown=appuser:appuser /workspace/target/*.jar /app/app.jar
+# Step 2: Download dependencies (cached until pom.xml changes)
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn dependency:go-offline -B
 
-USER appuser
+# Step 3: Copy actual source code
+COPY src ./src
 
-ENV SPRING_PROFILES_ACTIVE=prod \
-    SERVER_PORT=8080 \
-    APP_UPLOAD_BASE_DIR=/app/uploads
+# Step 4: Build application (uses cached dependencies from Step 2)
+RUN --mount=type=cache,target=/root/.m2 \
+    mvn package -DskipTests -B
 
-EXPOSE 8080
-
-ENTRYPOINT ["java", "-jar", "/app/app.jar"]
+# Step 5: Runtime stage
+FROM eclipse-temurin:17-jre
+WORKDIR /app
+COPY --from=builder /app/target/*.jar app.jar
+ENTRYPOINT ["java", "-jar", "app.jar"]
