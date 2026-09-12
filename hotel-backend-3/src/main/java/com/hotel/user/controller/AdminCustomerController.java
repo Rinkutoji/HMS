@@ -1,17 +1,24 @@
 package com.hotel.user.controller;
 
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
 import com.hotel.response.ApiResponse;
 import com.hotel.response.PageResponse;
 import com.hotel.user.dto.UserDTO;
 import com.hotel.user.entity.RoleName;
 import com.hotel.user.service.UserManagementService;
+
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.web.PageableDefault;
-import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/api/admin/customers")
+@RequestMapping({"/api/admin/customers", "/api/admin/users"})
 @RequiredArgsConstructor
 public class AdminCustomerController {
 
